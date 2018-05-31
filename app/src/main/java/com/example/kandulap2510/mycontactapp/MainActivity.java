@@ -1,5 +1,6 @@
 package com.example.kandulap2510.mycontactapp;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -57,7 +58,8 @@ public class MainActivity extends AppCompatActivity {
             //Append res column 0,1,2,3 to the buffer - see StringBuffer and Cursor api's
             //Delimit each of the 'appends" with line feed "\n";
 
-            buffer.append("Name: " + res.getString(1) +"\n");
+            buffer.append("Name: " + res.getString(1) +"\n" +
+                    "");
             buffer.append("Address:" + res.getString(3) + "\n");
             buffer.append("Number:" + res.getString(2) + "\n");
             buffer.append("\n\n");
@@ -75,5 +77,48 @@ public class MainActivity extends AppCompatActivity {
         builder.setMessage(message);
         builder.show();
     }
+
+    public static final String EXTRA_MESSAGE = "com.example.kandulap2510.mycontactapp.MESSAGE";
+    public void searchRecord(View view){
+
+
+        Log.d("MyContactApp","MainActivity: launching SearchActivity");
+        Intent intent = new Intent(this, SearchActivity.class);
+
+
+        String word = editName.getText().toString();
+        Cursor res = myDb.getAllData();
+        Log.d("MyContactApp","MainActivity: viewData: received cursor");
+
+        if(res.getCount() == 0) {
+            showMessage("Error", "No data found in database");
+            return;
+        }
+
+        StringBuffer buffer = new StringBuffer();
+        while (res.moveToNext()){
+
+            //Append res column 0,1,2,3 to the buffer - see StringBuffer and Cursor api's
+            //Delimit each of the 'appends" with line feed "\n";
+            if(res.getString(1).equals(word)) {
+                buffer.append("Name: " + res.getString(1) + "\n" +
+                        "");
+                buffer.append("Address:" + res.getString(3) + "\n");
+                buffer.append("Number:" + res.getString(2) + "\n");
+                buffer.append("\n\n");
+                intent.putExtra(EXTRA_MESSAGE, buffer.toString());
+            }
+            else{
+                intent.putExtra(EXTRA_MESSAGE, "not found");
+            }
+        }
+
+
+        startActivity(intent);
+
+    }
+
+
+
 
 }
